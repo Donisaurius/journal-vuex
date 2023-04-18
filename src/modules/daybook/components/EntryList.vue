@@ -1,12 +1,14 @@
 <template>
   <div class="entry-list-container bg-warning">
     <div class="px-2 pt-2 mb-2">
-      <input
-        v-model="term"
-        type="text"
-        class="form-control"
-        placeholder="Search"
-      />
+      <input v-model="term" type="text" class="form-control" placeholder="Search" />
+    </div>
+
+    <div class="my-2 d-flex flex-column">
+      <button class="btn btn-primary mx-3" @click="$router.push({ name: 'entry', params: { id: 'new' } })">
+        <i class="fa fa-plus-circle"></i>
+        Nueva entrada
+      </button>
     </div>
 
     <div class="entry-scrollarea">

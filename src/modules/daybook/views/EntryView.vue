@@ -9,41 +9,35 @@
       </div>
 
       <div>
-        <button class="btn btn-danger mx-2">
+        <button v-if="entry.id" class="btn btn-danger mx-2" @click="handleDelete">
           Borrar<i class="fa fa-trash-alt"></i>
         </button>
-        <button class="btn btn-primary">
+        <!-- <button class="btn btn-primary">
           Subir foto<i class="fa fa-upload"></i>
-        </button>
+        </button> -->
       </div>
     </div>
 
     <hr />
 
     <div class="d-flex flex-column px-3 h-75">
-      <textarea
-        v-model="entry.text"
-        cols="30"
-        rows="10"
-        placeholder="What's happened today?"
-      ></textarea>
+      <textarea v-model="entry.title" cols="30" rows="10" placeholder="What's happened today?"></textarea>
     </div>
   </template>
 
-  <Fab icon="fa-save" />
+  <Fab icon="fa-save" @saveEntry="saveEntry" />
 
-  <img
-    src="https://cdn.pixabay.com/photo/2023/03/20/03/55/ducks-7863701_1280.jpg"
-    alt="entry-picture"
-    class="img-thumbnail"
-  />
+  <img src="https://cdn.pixabay.com/photo/2023/03/20/03/55/ducks-7863701_1280.jpg" alt="entry-picture"
+    class="img-thumbnail" />
 </template>
 
 <script>
 import { defineAsyncComponent } from "vue";
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions, mapState } from "vuex";
 
 import getDayYear from "../helpers/getDayMonthYear";
+
+import Swal from 'sweetalert2'
 
 export default {
   props: {
@@ -64,6 +58,7 @@ export default {
 
   computed: {
     ...mapGetters("journal", ["getEntryById"]),
+    ...mapState("journal", ["entries"]),
     getId() {
       return this.getEntryById(this.id);
     },
@@ -85,14 +80,54 @@ export default {
   },
   methods: {
     loadEntry() {
-      const entry = this.getEntryById(this.id);
+      let entry;
 
-      if (!entry) {
-        return this.$router.push({ name: "no-entry" });
+      if (this.id === "new") {
+        entry = {
+          title: "",
+          date: new Date().toDateString()
+        }
+      } else {
+        entry = this.getEntryById(this.id)
+        if (!entry) {
+          return this.$router.push({ name: "no-entry" });
+        }
       }
+
 
       this.entry = entry;
     },
+    async saveEntry() {
+
+      new Swal({
+        title: "Espere por favor...",
+        allowOutsideClick: false
+      })
+
+      Swal.showLoading()
+
+      if (this.entry.id) {
+
+        await this.updateEntry(this.entry)
+      } else {
+        await this.createEntry(this.entry);
+
+        this.$router.push({ name: "entry", params: { id: this.entries[0].id } })
+      }
+
+      Swal.fire("Guardado", "", "success")
+
+    },
+    async handleDelete() {
+
+      const { isConfirmed } = await Swal.fire({ title: "¿Estas seguro de eliminar?", icon: "question", showDenyButton: true })
+
+      if (!isConfirmed) return
+
+      await this.deleteEntry(this.entry.id);
+      this.$router.push("/daybook")
+    },
+    ...mapActions("journal", ["updateEntry", "createEntry", "deleteEntry"])
   },
   created() {
     this.loadEntry();

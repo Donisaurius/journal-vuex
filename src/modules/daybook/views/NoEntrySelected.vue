@@ -2,7 +2,7 @@
   <div class="d-flex justify-content-center">
     <p class="align-self-center">Nada seleccionado</p>
   </div>
-  <Fab />
+  <Fab @saveEntry="newEntry" />
 </template>
 
 <script>
@@ -11,6 +11,12 @@ export default {
   components: {
     Fab: defineAsyncComponent(() => import("../components/Fab.vue")),
   },
+  methods: {
+    newEntry() {
+
+      this.$router.push({ name: "entry", params: { id: "new" } })
+    }
+  }
 };
 </script>
 

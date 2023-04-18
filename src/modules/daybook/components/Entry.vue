@@ -1,8 +1,5 @@
 <template>
-  <div
-    class="entry-container mb-3 pointer"
-    @click="$router.push({ name: 'entry', params: { id: entry.id } })"
-  >
+  <div class="entry-container mb-3 pointer" @click="$router.push({ name: 'entry', params: { id: entry.id } })">
     <!-- Title -->
     <div class="entry-title d-flex">
       <span class="text-success fs-5 fw-bold">{{ day }}</span>
@@ -51,9 +48,9 @@ export default {
   },
   computed: {
     shortText() {
-      return this.entry.text.length > 130
-        ? this.entry.text.substring(0, 130) + "..."
-        : this.entry.text;
+      return this.entry.title.length > 130
+        ? this.entry.title.substring(0, 130) + "..."
+        : this.entry.title;
     },
     day() {
       const date = new Date(this.entry.date);
@@ -69,6 +66,7 @@ export default {
       return `${date.getFullYear()}, ${days[date.getDay()]}`;
     },
   },
+
 };
 </script>
 
